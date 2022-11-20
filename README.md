@@ -9,7 +9,7 @@
 ## Project Description
 
 INF574 course Project : 
-Implement from scratch the Model PointNet++ for point cloud segmentation. 
+Implement from scratch the Model PointNet++(https://arxiv.org/abs/1706.02413) for point cloud segmentation. 
 
 ## Environment Setup
 ```shell
