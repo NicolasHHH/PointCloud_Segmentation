@@ -16,6 +16,9 @@ Implement from scratch the Model PointNet++ for point cloud segmentation.
 pip install mitsuba 
 # for beautiful point could visualization
 # source : https://mitsuba.readthedocs.io/en/stable/
+
+pip install h5py
+# parse h5 files 
 ```
 
 ## Dataset Download link:
