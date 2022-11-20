@@ -1,11 +1,24 @@
 # PointCloud_Segmentation
 
-### Project Description
+## Table of Contents
+- Project Description
+- Environment setup
+- Dataset download link
+- Github Colabration workflow & Example
+
+## Project Description
 
 INF574 course Project : 
 Implement from scratch the Model PointNet++ for point cloud segmentation. 
 
-### Dataset Download link:
+## Environment Setup
+```shell
+pip install mitsuba 
+# for beautiful point could visualization
+# source : https://mitsuba.readthedocs.io/en/stable/
+```
+
+## Dataset Download link:
 Credits to : https://github.com/AnTao97/PointCloudDatasets
 
 - ShapeNetCore.v2 (0.98G)&ensp;[[TsinghuaCloud]](https://cloud.tsinghua.edu.cn/f/06a3c383dc474179b97d/)&ensp;[[BaiduDisk]](https://pan.baidu.com/s/154As2kzHZczMipuoZIc0kg)
@@ -40,7 +53,7 @@ ModelNet10 dataset is a part of ModelNet40 dataset, containing 4,899 pre-aligned
 The 10 categories include: `bathtub`, `bed`, `chair`, `desk`, `dresser`, `monitor`, `night_stand`, `sofa`, `table`, `toilet`.
 
 
-### Github colabration workflow
+## Github colabration workflow
 
 ```bash
 # do once
