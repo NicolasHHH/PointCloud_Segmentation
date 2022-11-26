@@ -13,12 +13,17 @@ Implement from scratch the Model PointNet++(https://arxiv.org/abs/1706.02413) fo
 
 ## Environment Setup
 ```shell
+# required dependencies ------------------------
+pip install -i requirements.txt
+
+
+# not used or optional dependencies : --------------------
 pip install mitsuba 
 # for beautiful point could visualization
 # source : https://mitsuba.readthedocs.io/en/stable/
 
 pip install h5py
-# parse h5 files 
+# parse h5 files (additional datasets)
 ```
 
 ## Data Preparation
