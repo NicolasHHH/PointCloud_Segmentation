@@ -21,7 +21,37 @@ pip install h5py
 # parse h5 files 
 ```
 
-## Dataset Download link:
+## Data Preparation
+Download alignment **ShapeNet** [here](https://shapenet.cs.stanford.edu/media/shapenetcore_partanno_segmentation_benchmark_v0_normal.zip) and
+save in `data/shapenetcore_partanno_segmentation_benchmark_v0_normal/`.
+
+Data folder structure (16 categories x, y, z, Nx, Ny, Nz)
+```text
+data/shapenetcore_partanno_segmentation_benchmark_v0_normal
+  |
+  |--02691156 : Airplane
+  |--02773838 : Bag	
+  |--02954340 : Cap
+  |--02958343 : Car
+  |--03001627 : Chair
+  |--03261776 : Earphone
+  |--03467517 : Guitar	
+  |--03624134 : Knife	
+  |--03636649 : Lamp
+  |--03642806 : Laptop	
+  |--03790512 : Motorbike
+  |--03797390 : Mug	
+  |--03948459 : Pistol
+  |--04099429 : Rocket	
+  |--04225987 : Skateboard	
+  |--04379243 : Table
+  |--train_test_split            # .json set partitions
+  |--synsetoffset2category.txt   # categorical correspondances
+```
+Preview in CloudCompare : 
+![Airplane.txt](media/airplane.png)
+
+## Additional Datasets Download link (not used):
 Credits to : https://github.com/AnTao97/PointCloudDatasets
 
 - ShapeNetCore.v2 (0.98G)&ensp;[[TsinghuaCloud]](https://cloud.tsinghua.edu.cn/f/06a3c383dc474179b97d/)&ensp;[[BaiduDisk]](https://pan.baidu.com/s/154As2kzHZczMipuoZIc0kg)

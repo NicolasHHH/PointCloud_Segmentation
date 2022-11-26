@@ -98,7 +98,7 @@ class Dataset(data.Dataset):
         if self.segmentation:
             self.seg = np.concatenate(seg, axis=0)
 
-        if self.class_choice != None:
+        if self.class_choice is not None:
             indices = (self.name == class_choice)
             self.data = self.data[indices]
             self.label = self.label[indices]
@@ -133,7 +133,7 @@ class Dataset(data.Dataset):
         all_seg = []
         for h5_name in path:
             # print("h5 file name : ", h5_name) # added by tianyang for debugging
-            f = h5py.File(h5_name, 'r') # tianyang : changed 'r+' to 'r'
+            f = h5py.File(h5_name, 'r')  # tianyang : changed 'r+' to 'r'
             data = f['data'][:].astype('float32')
             label = f['label'][:].astype('int64')
             if self.segmentation:
