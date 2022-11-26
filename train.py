@@ -234,7 +234,8 @@ def main(args):
         # evaluation ------------------------------------------------------------------------------------------------
         with torch.no_grad():
             segmentor = segmentor.eval()
-            test_metrics = evaluation(model=segmentor, dataloader=test_dataloader, logger=logger)
+            test_metrics = evaluation(model=segmentor, dataloader=test_dataloader, num_classes=num_classes,
+                                      num_part=num_part, logger=logger)
 
         # Write results to log ---------------------------------------------------------------------------
         log_string(logger, 'Epoch %d test Accuracy: %f  Class avg mIOU: %f  Instance avg mIOU: %f' % (

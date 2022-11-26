@@ -59,6 +59,11 @@ data/shapenetcore_partanno_segmentation_benchmark_v0_normal
 Preview in CloudCompare : 
 ![Airplane.txt](media/airplane.png)
 
+## Training 
+```shell
+ python train.py  --use_normal --log_dir PointNetPP --device "cuda"
+```
+
 ## Additional Datasets Download link (not used):
 Credits to : https://github.com/AnTao97/PointCloudDatasets
 
