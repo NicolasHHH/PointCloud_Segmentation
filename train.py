@@ -35,9 +35,8 @@ def parse_args():
     parser.add_argument('--batch_size', type=int, default=16, help='batch Size during training')
     parser.add_argument('--epoch', default=251, type=int, help='epoch to run')
     parser.add_argument('--learning_rate', default=0.001, type=float, help='initial learning rate')
-    parser.add_argument('--gpu', type=str, default='0', help='specify GPU devices')
-    # add option for non-gpu devices
-    parser.add_argument('--device', type=str, default='msi', help='specify device: cpu, mps, cuda:0')
+    # modified option for non-gpu devices
+    parser.add_argument('--device', type=str, default='mps', help='specify device: cpu, mps, cuda:0')
     parser.add_argument('--optimizer', type=str, default='Adam', help='Adam or SGD')
     parser.add_argument('--log_dir', type=str, default=None, help='log path')
     parser.add_argument('--decay_rate', type=float, default=1e-4, help='weight decay')

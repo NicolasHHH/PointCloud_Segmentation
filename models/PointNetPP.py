@@ -65,7 +65,7 @@ class PointNetPP(nn.Module):
         x = self.conv2(x)  # batch * (chl = num_classes) * n_points
         x = F.log_softmax(x, dim=1)
         x = x.permute(0, 2, 1)  # batch * n_points *  (chl = num_classes)
-        print("x", x.shape)
+        # print("x", x.shape)
         return x  # , l3_points
 
 
