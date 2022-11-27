@@ -94,7 +94,7 @@ def evaluation(model, dataloader, num_classes, num_part, logger):
         points, cls, target = points.float().to(args.device), cls.long().to(args.device), target.long().to(
             args.device)
         points = points.transpose(2, 1)
-        seg_pred, _ = model(points, onehot(label, num_classes))
+        seg_pred = model(points, onehot(cls, num_classes))
         cur_pred_val = seg_pred.cpu().data.numpy()
         cur_pred_val_logits = cur_pred_val
         cur_pred_val = np.zeros((cur_batch_size, n_points)).astype(np.int32)
