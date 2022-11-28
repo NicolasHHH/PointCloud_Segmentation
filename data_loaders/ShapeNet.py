@@ -42,6 +42,7 @@ class PartNormalDataset(Dataset):
 
         if not class_choice is None:
             self.cat = {k: v for k, v in self.cat.items() if k in class_choice}
+        # {'Airplane': '02691156', 'Bag': '02773838',
 
         self.meta = {}
         with open(os.path.join(self.root, 'train_test_split', 'shuffled_train_file_list.json'), 'r') as f:

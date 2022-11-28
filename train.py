@@ -16,7 +16,7 @@ from modules.utils import onehot, inplace_relu, log_string, weights_init, update
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # root dir
 sys.path.append(os.path.join(BASE_DIR, 'models'))
 
-# python train.py  --use_normal --log_dir PointNetPP --device "cpu"
+# python train.py  --use_normals --log_dir PointNetPP --device "cpu"
 
 seg_classes = {'Earphone': [16, 17, 18], 'Motorbike': [30, 31, 32, 33, 34, 35], 'Rocket': [41, 42, 43],
                'Car': [8, 9, 10, 11], 'Laptop': [28, 29], 'Cap': [6, 7], 'Skateboard': [44, 45, 46], 'Mug': [36, 37],
@@ -27,8 +27,6 @@ seg_label_to_cat = {}  # {0:Airplane, 1:Airplane, ...49:Table}
 for cat in seg_classes.keys():
     for label in seg_classes[cat]:
         seg_label_to_cat[label] = cat
-print(seg_label_to_cat,len(seg_label_to_cat))
-
 
 def parse_args():
     parser = argparse.ArgumentParser('Model')
@@ -76,6 +74,7 @@ def train(model, dataloader, optim, loss_func, num_classes, num_part, logger, me
         loss = loss_func(seg_pred, target)  # trans_feat
         loss.backward()
         optim.step()
+        break
     train_instance_acc = np.mean(mean_correct)
     log_string(logger, 'Train accuracy is: %.5f' % train_instance_acc)
     return train_instance_acc
@@ -91,17 +90,18 @@ def evaluation(model, dataloader, num_classes, num_part, logger):
     shape_ious = {ct: [] for ct in seg_classes.keys()}
 
     for batch_id, (points, cls, target) in tqdm(enumerate(dataloader), total=len(dataloader), smoothing=0.9):
-        cur_batch_size, n_points, _ = points.size()
+        cur_batch_size, n_points, _ = points.size()  # 16 2048 6
         points, cls, target = points.float().to(args.device), cls.long().to(args.device), target.long().to(args.device)
         points = points.transpose(2, 1)
         seg_pred = model(points, onehot(cls, num_classes))
         cur_pred_val = seg_pred.cpu().data.numpy()
-        cur_pred_val_logits = cur_pred_val
-        cur_pred_val = np.zeros((cur_batch_size, n_points)).astype(np.int32)
+        cur_pred_val_logits = cur_pred_val  # 16 2048 50
+        cur_pred_val = np.zeros((cur_batch_size, n_points)).astype(np.int32)  # 16 2048
         target = target.cpu().data.numpy()
 
         for i in range(cur_batch_size):
-            category = seg_label_to_cat[target[i, 0]]
+            category = seg_label_to_cat[target[i, 0]]  # the first point suffices to determine the class of the obj
+            # print("category : ", category)
             logits = cur_pred_val_logits[i, :, :]
             cur_pred_val[i, :] = np.argmax(logits[:, seg_classes[category]], 1) + seg_classes[category][0]
 
@@ -127,20 +127,20 @@ def evaluation(model, dataloader, num_classes, num_part, logger):
                         np.sum((segl == l) | (segp == l)))
             shape_ious[cat].append(np.mean(part_ious))
 
-        all_shape_ious = []
-        for cat in shape_ious.keys():
-            for iou in shape_ious[cat]:
-                all_shape_ious.append(iou)
-            shape_ious[cat] = np.mean(shape_ious[cat])
-        mean_shape_ious = np.mean(list(shape_ious.values()))
-        test_metrics['accuracy'] = total_correct / float(total_seen)
-        test_metrics['class_avg_accuracy'] = np.mean(
-            np.array(total_correct_class) / np.array(total_seen_class, dtype=np.float))
-        for cat in sorted(shape_ious.keys()):
-            log_string(logger, 'eval mIoU of %s %f' % (cat + ' ' * (14 - len(cat)), shape_ious[cat]))
-        test_metrics['class_avg_iou'] = mean_shape_ious
-        test_metrics['instance_avg_iou'] = np.mean(all_shape_ious)
-        return test_metrics
+    all_shape_ious = []
+    for cat in shape_ious.keys():
+        for iou in shape_ious[cat]:
+            all_shape_ious.append(iou)
+        shape_ious[cat] = np.mean(shape_ious[cat])
+    mean_shape_ious = np.mean(list(shape_ious.values()))
+    test_metrics['accuracy'] = total_correct / float(total_seen)
+    test_metrics['class_avg_accuracy'] = np.mean(
+        np.array(total_correct_class) / np.array(total_seen_class, dtype=np.float))
+    for cat in sorted(shape_ious.keys()):
+        log_string(logger, 'eval mIoU of %s %f' % (cat + ' ' * (14 - len(cat)), shape_ious[cat]))
+    test_metrics['class_avg_iou'] = mean_shape_ious
+    test_metrics['instance_avg_iou'] = np.mean(all_shape_ious)
+    return test_metrics
 
 
 def main(args):
