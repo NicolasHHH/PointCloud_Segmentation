@@ -27,6 +27,7 @@ seg_label_to_cat = {}  # {0:Airplane, 1:Airplane, ...49:Table}
 for cat in seg_classes.keys():
     for label in seg_classes[cat]:
         seg_label_to_cat[label] = cat
+print(seg_label_to_cat,len(seg_label_to_cat))
 
 
 def parse_args():
@@ -91,8 +92,7 @@ def evaluation(model, dataloader, num_classes, num_part, logger):
 
     for batch_id, (points, cls, target) in tqdm(enumerate(dataloader), total=len(dataloader), smoothing=0.9):
         cur_batch_size, n_points, _ = points.size()
-        points, cls, target = points.float().to(args.device), cls.long().to(args.device), target.long().to(
-            args.device)
+        points, cls, target = points.float().to(args.device), cls.long().to(args.device), target.long().to(args.device)
         points = points.transpose(2, 1)
         seg_pred = model(points, onehot(cls, num_classes))
         cur_pred_val = seg_pred.cpu().data.numpy()
