@@ -33,7 +33,7 @@ def parse_args():
     parser.add_argument('--model', type=str, default='PointNetPP', help='model name')
     parser.add_argument('--batch_size', type=int, default=16, help='batch Size during training')
     parser.add_argument('--epoch', default=251, type=int, help='epoch to run')
-    parser.add_argument('--learning_rate', default=0.001, type=float, help='initial learning rate')
+    parser.add_argument('--learning_rate', default=0.0005, type=float, help='initial learning rate')
     # modified option for non-gpu devices
     parser.add_argument('--device', type=str, default='mps', help='specify device: cpu, mps, cuda:0')
     parser.add_argument('--optimizer', type=str, default='Adam', help='Adam or SGD')
@@ -74,7 +74,6 @@ def train(model, dataloader, optim, loss_func, num_classes, num_part, logger, me
         loss = loss_func(seg_pred, target)  # trans_feat
         loss.backward()
         optim.step()
-        break
     train_instance_acc = np.mean(mean_correct)
     log_string(logger, 'Train accuracy is: %.5f' % train_instance_acc)
     return train_instance_acc
