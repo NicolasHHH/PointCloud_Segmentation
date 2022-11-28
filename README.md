@@ -61,7 +61,7 @@ Preview in CloudCompare :
 
 ## Training 
 ```shell
- python train.py  --use_normal --log_dir PointNetPP --device "cuda"
+ python train.py  --use_normals --log_dir PointNetPP --device "cuda"
 ```
 
 ## Additional Datasets Download link (not used):
