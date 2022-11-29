@@ -26,8 +26,7 @@ def parse_args():
     parser.add_argument('--output_fn',type=str,default="output.txt",help="output file name")
     return parser.parse_args()
 
-# python inference.py --device cpu --source ./data/shapenetcore_partanno_segmentation_benchmark_v0_normal/04379243/1a8fe5baa2d4b5f7ee84261b3d20656.txt --category
-# "Table" --use_normals  --weight ./log/PointNetPP/checkpoints/best_model.pth
+# python inference.py --device cpu --source ./data/shapenetcore_partanno_segmentation_benchmark_v0_normal/04379243/1a8fe5baa2d4b5f7ee84261b3d20656.txt --category "Table" --use_normals  --weight ./log/PointNetPP2/checkpoints/best_model.pth
 
 def main(args):
 
@@ -40,7 +39,7 @@ def main(args):
     # init model and load trained weights
     model_obj = importlib.import_module(args.model)
     segmentor = model_obj.PointNetPP(num_parts, use_normals=args.use_normals).to(args.device)
-    checkpoint = torch.load(str(args.weight))
+    checkpoint = torch.load(str(args.weight),map_location=torch.device(args.device))
     end_epoch = checkpoint['epoch']
     segmentor.load_state_dict(checkpoint['model_state_dict'])
     segmentor.apply(inplace_relu)
@@ -50,7 +49,7 @@ def main(args):
 
     # read source
     assert args.source[-4:] == ".txt", "Source file must be .txt format, split using spaces"
-    data = np.loadtxt(args.source).astype(np.float32)[:, 0:6]
+    data = np.loadtxt(args.source).astype(np.float32)[:, 0:3]
     # data.shape
     if args.use_normals:
         assert data.shape[1] == 6, "data should have six cols : x, y, z, Nx, Ny, Nz"
