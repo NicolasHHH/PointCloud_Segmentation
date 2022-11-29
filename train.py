@@ -126,19 +126,35 @@ def evaluation(model, dataloader, num_classes, num_part, logger):
                         np.sum((segl == l) | (segp == l)))
             shape_ious[cat].append(np.mean(part_ious))
 
+    # shape_ious : (num_classes=16) * n_objs
+    # { "airplane" : [ iou_plane_1, iou_plane_2, ... ],
+    #   ...
+    #   "car" : [ iou_car_1, iou_car_2, ... ] }
+
     all_shape_ious = []
     for cat in shape_ious.keys():
         for iou in shape_ious[cat]:
             all_shape_ious.append(iou)
         shape_ious[cat] = np.mean(shape_ious[cat])
+
+    # all_shape_ious = [iou_plane_1 + ... + iou_car_n] / len(training_set)
+
+    # shape_ious : (num_classes=16) * 1
+    # { "airplane" : mean_planes_iou,
+    #   ...
+    #   "car" : mean_cars_iou }
+
     mean_shape_ious = np.mean(list(shape_ious.values()))
+
+    # mean_shape_ious = [mean_planes_iou + ... + mean_cars_iou]/16
+
     test_metrics['accuracy'] = total_correct / float(total_seen)
     test_metrics['class_avg_accuracy'] = np.mean(
         np.array(total_correct_class) / np.array(total_seen_class, dtype=np.float))
     for cat in sorted(shape_ious.keys()):
         log_string(logger, 'eval mIoU of %s %f' % (cat + ' ' * (14 - len(cat)), shape_ious[cat]))
-    test_metrics['class_avg_iou'] = mean_shape_ious
-    test_metrics['instance_avg_iou'] = np.mean(all_shape_ious)
+    test_metrics['class_avg_iou'] = mean_shape_ious # avearge of mean class ious
+    test_metrics['instance_avg_iou'] = np.mean(all_shape_ious) # average of mean object ious
     return test_metrics
 
 
