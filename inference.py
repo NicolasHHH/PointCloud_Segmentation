@@ -8,6 +8,7 @@ from pathlib import Path
 from data_loaders.ShapeNet import pc_normalize
 from modules.utils import onehot, inplace_relu
 
+
 shapenetpart_cat2id = {'airplane': 0, 'bag': 1, 'cap': 2, 'car': 3, 'chair': 4,
                        'earphone': 5, 'guitar': 6, 'knife': 7, 'lamp': 8, 'laptop': 9,
                        'motor': 10, 'mug': 11, 'pistol': 12, 'rocket': 13, 'skateboard': 14, 'table': 15}
@@ -25,9 +26,8 @@ def parse_args():
     parser.add_argument('--output_fn',type=str,default="output.txt",help="output file name")
     return parser.parse_args()
 
-
-# python inference.py --device cpu --use_normals --source ./ --weight  ./log/PointNetPP/checkpoints/best_model.pth
-
+# python inference.py --device cpu --source ./data/shapenetcore_partanno_segmentation_benchmark_v0_normal/04379243/1a8fe5baa2d4b5f7ee84261b3d20656.txt --category
+# "Table" --use_normals  --weight ./log/PointNetPP/checkpoints/best_model.pth
 
 def main(args):
 
