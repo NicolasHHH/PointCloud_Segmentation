@@ -7,16 +7,16 @@ import sys
 import importlib
 import numpy as np
 
-from pathlib import Path
+
 from tqdm import tqdm
 from data_loaders.ShapeNet import PartNormalDataset
 from data_loaders import data_augmentation
 from modules.utils import onehot, inplace_relu, log_string, weights_init, update_lr_bn
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # root dir
-sys.path.append(os.path.join(BASE_DIR, 'models'))
+sys.path.append(os.path.join(BASE_DIR, 'models'))  # ./model
 
-# python train.py  --use_normals --log_dir PointNetPP --device "cpu"
+# python train.py  --use_normals --log_dir PointNetPP --device "cuda"
 
 seg_classes = {'Earphone': [16, 17, 18], 'Motorbike': [30, 31, 32, 33, 34, 35], 'Rocket': [41, 42, 43],
                'Car': [8, 9, 10, 11], 'Laptop': [28, 29], 'Cap': [6, 7], 'Skateboard': [44, 45, 46], 'Mug': [36, 37],
@@ -175,7 +175,7 @@ def main(args):
     log_dir.mkdir(exist_ok=True)
 
     # LOG
-    args = parse_args()
+    # args = parse_args()
     logger = logging.getLogger("Model")
     logger.setLevel(logging.INFO)
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
