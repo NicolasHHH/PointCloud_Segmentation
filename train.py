@@ -6,27 +6,17 @@ import logging
 import sys
 import importlib
 import numpy as np
-
-
+from pathlib import Path
 from tqdm import tqdm
 from data_loaders.ShapeNet import PartNormalDataset
 from data_loaders import data_augmentation
 from modules.utils import onehot, inplace_relu, log_string, weights_init, update_lr_bn
+from data_loaders.constants import seg_classes, seg_label_to_cat
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # root dir
 sys.path.append(os.path.join(BASE_DIR, 'models'))  # ./model
 
 # python train.py  --use_normals --log_dir PointNetPP --device "cuda"
-
-seg_classes = {'Earphone': [16, 17, 18], 'Motorbike': [30, 31, 32, 33, 34, 35], 'Rocket': [41, 42, 43],
-               'Car': [8, 9, 10, 11], 'Laptop': [28, 29], 'Cap': [6, 7], 'Skateboard': [44, 45, 46], 'Mug': [36, 37],
-               'Guitar': [19, 20, 21], 'Bag': [4, 5], 'Lamp': [24, 25, 26, 27], 'Table': [47, 48, 49],
-               'Airplane': [0, 1, 2, 3], 'Pistol': [38, 39, 40], 'Chair': [12, 13, 14, 15], 'Knife': [22, 23]}
-
-seg_label_to_cat = {}  # {0:Airplane, 1:Airplane, ...49:Table}
-for cat in seg_classes.keys():
-    for label in seg_classes[cat]:
-        seg_label_to_cat[label] = cat
 
 def parse_args():
     parser = argparse.ArgumentParser('Model')
@@ -35,7 +25,7 @@ def parse_args():
     parser.add_argument('--epoch', default=251, type=int, help='epoch to run')
     parser.add_argument('--learning_rate', default=0.0005, type=float, help='initial learning rate')
     # modified option for non-gpu devices
-    parser.add_argument('--device', type=str, default='mps', help='specify device: cpu, mps, cuda:0')
+    parser.add_argument('--device', type=str, default='mps', help='specify device: cpu, mps(MACOS), cuda:0')
     parser.add_argument('--optimizer', type=str, default='Adam', help='Adam or SGD')
     parser.add_argument('--log_dir', type=str, default=None, help='log path')
     parser.add_argument('--decay_rate', type=float, default=1e-4, help='weight decay')
@@ -207,7 +197,7 @@ def main(args):
 
     # load weight or random init
     try:
-        checkpoint = torch.load(str(exp_dir) + '/checkpoints/best_model.pth')
+        checkpoint = torch.load(str(exp_dir) + '/checkpoints/last.pth')
         start_epoch = checkpoint['epoch']
         segmentor.load_state_dict(checkpoint['model_state_dict'])
         log_string(logger, 'Use pretrained model')

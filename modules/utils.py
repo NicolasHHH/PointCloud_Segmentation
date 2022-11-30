@@ -67,15 +67,15 @@ def update_lr_bn(optimizer, model, logger, lr, lr_decay, epoch):
 
 def fps(xyz, n_point):
     """
-    Farthest point (down)sampling : downsample the pointcloud to n_point.
-    :param xyz: point
+    Farthest point (down)sampling : down sample the pointcloud to n_point points.
+    :param xyz: point cloud, torch.tensor(
     :param n_point: target number of samples
     :return: sampled points [batch * n_point]
     """
     if xyz.shape[1] < n_point:
         print("Warning - Upsampling : Number of points < target number.")
 
-    batch, N, chl= xyz.shape
+    batch, N, chl = xyz.shape
 
     # initilisation ---------------
     samples_index = torch.zeros(batch, n_point, dtype=torch.long).to(xyz.device)
