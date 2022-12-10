@@ -61,7 +61,12 @@ Preview in CloudCompare :
 
 ## Training 
 ```shell
+ # multi-scale grouping implementation (default)
  python train.py  --use_normals --log_dir PointNetPP --device "cuda"
+
+# multi-resolution grouping implementation (beta)
+python train.py  --use_normals --model PointNetPPMRG --log_dir PointNetPPMRG --device "cuda"
+
 ```
 
 ## Additional Datasets Download link (not used):
