@@ -1,19 +1,18 @@
 """
-PointNet++ Network Class : MSG and SSG implementation
-MSG : Multi-Scale Grouping
-SSG : Single-Scale Grouping
+PointNet++ Network Class : MRG implementation
+MRG :  Multi-Resolution Grouping
 """
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from modules.utils import PointNetSetAbstractionMsg, PointNetSetAbstraction, \
-    PointNetFeaturePropagation
+from modules.utils import PointNetSetAbstraction, \
+    PointNetFeaturePropagation, PointNetSetAbstractionMrg
 
 
-class PointNetPP(nn.Module):
+class PointNetPPMRG(nn.Module):
     def __init__(self, num_parts, use_normals=False):
-        super(PointNetPP, self).__init__()
+        super(PointNetPPMRG, self).__init__()
         if use_normals:
             additional_channel = 3  # x, y, z, Nx, Ny, Nz
         else:
@@ -21,15 +20,16 @@ class PointNetPP(nn.Module):
         self.use_normals = use_normals
         self.num_parts = num_parts
         # set abstraction multi-scale grouping
-        self.sa1 = PointNetSetAbstractionMsg(512, [32, 64, 128], 3 + additional_channel,
-                                             [[32, 32, 64], [64, 64, 128], [64, 96, 128]])
-        self.sa2 = PointNetSetAbstractionMsg(128, [64, 128], 128 + 128 + 64, [[128, 128, 256], [128, 196, 256]])
+        self.sa1 = PointNetSetAbstraction(n_point=512, n_sample=32, in_channel=6 + additional_channel,
+                                          mlp=[32, 64, 128], group_all=False)
+        self.sa2 = PointNetSetAbstractionMrg(n_point=128, n_sample=64, in_channel_previous=9, in_channel=128,
+                                             mlps=[256, 256, 256], convs=[128, 194, 256])
         # basic set abstraction
         self.sa3 = PointNetSetAbstraction(n_point=None, n_sample=None, in_channel=512 + 3, mlp=[256, 512, 1024],
                                           group_all=True)
         # feature propagation
         self.fp3 = PointNetFeaturePropagation(in_channel=1536, mlp=[256, 256])
-        self.fp2 = PointNetFeaturePropagation(in_channel=576, mlp=[256, 128])
+        self.fp2 = PointNetFeaturePropagation(in_channel=384, mlp=[256, 128])
         self.fp1 = PointNetFeaturePropagation(in_channel=150 + additional_channel, mlp=[128, 128])
         self.conv1 = nn.Conv1d(128, 128, 1)
         self.bn1 = nn.BatchNorm1d(128)
@@ -47,7 +47,7 @@ class PointNetPP(nn.Module):
         """
         # Set Abstraction layers
         batch, chl, n_points = xyz.shape
-
+        # print("MRG input channels", chl)
         if self.use_normals:
             l0_points = xyz  # == xyz[:, :6 , :]
             l0_xyz = xyz[:, :3, :]
@@ -56,10 +56,12 @@ class PointNetPP(nn.Module):
             l0_xyz = xyz
 
         cls_label_one_hot = cls_label.view(batch, 16, 1).repeat(1, 1, n_points)
-
+        # print("Mrg l0 sizes:", l0_xyz.shape, l0_points.shape)
         # set abstraction + unit PointNet
         l1_xyz, l1_points = self.sa1(l0_xyz, l0_points)
-        l2_xyz, l2_points = self.sa2(l1_xyz, l1_points)
+        # print("Mrg l1 sizes:", l1_xyz.shape, l1_points.shape)
+        # 16 3 512 / 16 128 512
+        l2_xyz, l2_points = self.sa2(l0_xyz, l0_points, l1_xyz, l1_points)
         l3_xyz, l3_points = self.sa3(l2_xyz, l2_points)
 
         # Feature Propagation layers

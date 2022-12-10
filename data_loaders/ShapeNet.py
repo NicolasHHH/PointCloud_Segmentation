@@ -1,3 +1,16 @@
+"""
+Data Loader for ShapeNet Seg_part dataset
+Dataset Download Link:
+ https://shapenet.cs.stanford.edu/media/shapenetcore_partanno_segmentation_benchmark_v0_normal.zip
+
+Part of the code is inspired by :
+- Author(s) name: yanx27
+- Date: Apr 28, 2021
+- Commit version: commit ba4c5cf3a1e2b735d696c59a43c38345c3d003b9
+- Source: https://github.com/yanx27/Pointnet_Pointnet2_pytorch/ShapeNetDataLoader.py
+"""
+
+
 # *_*coding:utf-8 *_*
 import os
 import json

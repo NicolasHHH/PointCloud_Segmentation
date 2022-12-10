@@ -1,3 +1,15 @@
+"""
+Training Script
+
+Quick Start in Command Line:
+
+MSG :
+python train.py  --use_normals --log_dir PointNetPP2 --device "cuda"
+
+MRG :
+python train.py  --model PointNetPPMRG --use_normals --log_dir PointNetPPMSG --device "cuda"
+"""
+
 import argparse
 import os
 import torch
@@ -10,17 +22,17 @@ from pathlib import Path
 from tqdm import tqdm
 from data_loaders.ShapeNet import PartNormalDataset
 from data_loaders import data_augmentation
-from modules.utils import onehot, inplace_relu, log_string, weights_init, update_lr_bn
+from modules.utils import onehot, inplace_relu, log_string, weights_init
 from data_loaders.constants import seg_classes, seg_label_to_cat
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # root dir
 sys.path.append(os.path.join(BASE_DIR, 'models'))  # ./model
 
-# python train.py  --use_normals --log_dir PointNetPP --device "cuda"
 
 def parse_args():
     parser = argparse.ArgumentParser('Model')
-    parser.add_argument('--model', type=str, default='PointNetPP', help='model name')
+    parser.add_argument('--model', type=str, default='PointNetPP',
+                        help='model name, choose between PointNetPP and PointNetPPMRG')
     parser.add_argument('--batch_size', type=int, default=16, help='batch Size during training')
     parser.add_argument('--epoch', default=251, type=int, help='epoch to run')
     parser.add_argument('--learning_rate', default=0.0005, type=float, help='initial learning rate')
@@ -191,7 +203,10 @@ def main(args):
 
     # load model
     model_obj = importlib.import_module(args.model)
-    segmentor = model_obj.PointNetPP(num_part, use_normals=args.use_normals).to(args.device)
+    if args.model == "PointNetPPMRG":
+        segmentor = model_obj.PointNetPPMRG(num_part, use_normals=args.use_normals).to(args.device)
+    else:
+        segmentor = model_obj.PointNetPP(num_part, use_normals=args.use_normals).to(args.device)
     criterion = model_obj.get_loss().to(args.device)
     segmentor.apply(inplace_relu)
 
@@ -229,9 +244,6 @@ def main(args):
         mean_correct = []
         log_string(logger, 'Epoch %d (%d/%s):' % (global_epoch + 1, epoch + 1, args.epoch))
 
-        # Adjust learning rate and BN momentum
-        # segmentor = update_lr_bn(optimizer, segmentor, logger, args.learning_rate, args.lr_decay, epoch)
-
         # training ----------------------------------------------------------------------------------------------------
         segmentor = segmentor.train()
         train_instance_acc = train(segmentor, train_dataloader, optimizer, criterion, num_classes, num_part, logger, mean_correct)
@@ -242,11 +254,11 @@ def main(args):
             test_metrics = evaluation(model=segmentor, dataloader=test_dataloader, num_classes=num_classes,
                                       num_part=num_part, logger=logger)
 
-        # Write results to log ---------------------------------------------------------------------------
+        # Write results to log --------------------------------------------------------------------------------
         log_string(logger, 'Epoch %d test Accuracy: %f  Class avg mIOU: %f  Instance avg mIOU: %f' % (
             epoch + 1, test_metrics['accuracy'], test_metrics['class_avg_iou'], test_metrics['instance_avg_iou']))
 
-        # save best model weights
+        # Save best model weights -----------------------------------------------------------------------------
         if test_metrics['instance_avg_iou'] >= best_instance_avg_iou:
             logger.info('Save model...')
             save_path = str(checkpoints_dir) + '/best_model.pth'

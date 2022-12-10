@@ -1,3 +1,14 @@
+"""
+Run inference
+
+Quick Start Command:
+
+python inference.py --device cpu --source
+./data/shapenetcore_partanno_segmentation_benchmark_v0_normal/04379243/1a8fe5baa2d4b5f7ee84261b3d20656.txt
+--category "Table" --use_normals  --weight ./log/PointNetPP2/checkpoints/best_model.pth
+"""
+
+
 import argparse
 import os
 import torch
@@ -21,9 +32,6 @@ def parse_args():
     parser.add_argument('--category', type=str, required=True, help="object class")
     parser.add_argument('--output_fn', type=str, default="output.txt", help="output file name")
     return parser.parse_args()
-
-
-# python inference.py --device cpu --source ./data/shapenetcore_partanno_segmentation_benchmark_v0_normal/04379243/1a8fe5baa2d4b5f7ee84261b3d20656.txt --category "Table" --use_normals  --weight ./log/PointNetPP2/checkpoints/best_model.pth
 
 
 def main(args):

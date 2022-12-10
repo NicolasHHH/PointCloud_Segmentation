@@ -1,3 +1,10 @@
+# Unit Test on ShapeNet Data Loader
+"""
+test 1 : .__len__()  PASSED
+test 2 .__getItem__()  PASSED
+test 3 --use_normals   PASSED
+"""
+
 from data_loaders.ShapeNet import PartNormalDataset
 from data_loaders.constants import shapenetpart_cat2id, seg_classes
 
@@ -26,7 +33,7 @@ def main():
     print(seg.shape, seg.dtype)
 
     # test 3 use_normals
-    print("\ntest 3 .__getItem__()\n")
+    print("\ntest 3 .__getItem__() with normals\n")
     dataloader = PartNormalDataset(seg_classes, root="../data/shapenetcore_partanno_segmentation_benchmark_v0_normal",
                                    split="train", use_normals=True)
     point_set, cls, seg = dataloader[2]
